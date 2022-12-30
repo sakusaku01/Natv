@@ -2,13 +2,13 @@ package kg.megacom.NaTv.models.mappers;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import kg.megacom.NaTv.models.dtos.OrderDto;
 import kg.megacom.NaTv.models.entity.Order;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2022-12-21T09:03:05+0600",
+    date = "2022-12-30T11:59:06+0600",
     comments = "version: 1.5.2.Final, compiler: javac, environment: Java 11.0.16 (Oracle Corporation)"
 )
 public class OrderMapperImpl implements OrderMapper {
@@ -21,6 +21,16 @@ public class OrderMapperImpl implements OrderMapper {
 
         Order order = new Order();
 
+        order.setId( d.getId() );
+        order.setText( d.getText() );
+        order.setName( d.getName() );
+        order.setPhone( d.getPhone() );
+        order.setEmail( d.getEmail() );
+        order.setTotalPrice( d.getTotalPrice() );
+        order.setEditDate( d.getEditDate() );
+        order.setAddDate( d.getAddDate() );
+        order.setStatus( d.getStatus() );
+
         return order;
     }
 
@@ -31,6 +41,16 @@ public class OrderMapperImpl implements OrderMapper {
         }
 
         OrderDto orderDto = new OrderDto();
+
+        orderDto.setId( e.getId() );
+        orderDto.setText( e.getText() );
+        orderDto.setName( e.getName() );
+        orderDto.setPhone( e.getPhone() );
+        orderDto.setEmail( e.getEmail() );
+        orderDto.setTotalPrice( e.getTotalPrice() );
+        orderDto.setEditDate( e.getEditDate() );
+        orderDto.setAddDate( e.getAddDate() );
+        orderDto.setStatus( e.getStatus() );
 
         return orderDto;
     }

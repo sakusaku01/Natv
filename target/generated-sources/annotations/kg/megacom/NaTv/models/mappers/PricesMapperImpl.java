@@ -2,13 +2,13 @@ package kg.megacom.NaTv.models.mappers;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import kg.megacom.NaTv.models.dtos.PricesDto;
 import kg.megacom.NaTv.models.entity.Prices;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2022-12-21T09:03:05+0600",
+    date = "2022-12-30T11:59:06+0600",
     comments = "version: 1.5.2.Final, compiler: javac, environment: Java 11.0.16 (Oracle Corporation)"
 )
 public class PricesMapperImpl implements PricesMapper {
@@ -21,6 +21,12 @@ public class PricesMapperImpl implements PricesMapper {
 
         Prices prices = new Prices();
 
+        prices.setId( d.getId() );
+        prices.setStartDate( d.getStartDate() );
+        prices.setEndDate( d.getEndDate() );
+        prices.setPrice( d.getPrice() );
+        prices.setChannelId( d.getChannelId() );
+
         return prices;
     }
 
@@ -31,6 +37,12 @@ public class PricesMapperImpl implements PricesMapper {
         }
 
         PricesDto pricesDto = new PricesDto();
+
+        pricesDto.setId( e.getId() );
+        pricesDto.setStartDate( e.getStartDate() );
+        pricesDto.setEndDate( e.getEndDate() );
+        pricesDto.setPrice( e.getPrice() );
+        pricesDto.setChannelId( e.getChannelId() );
 
         return pricesDto;
     }

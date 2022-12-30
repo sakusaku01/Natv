@@ -1,5 +1,6 @@
 package kg.megacom.NaTv.models.entity;
 
+import kg.megacom.NaTv.services.microServices.Photo;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;

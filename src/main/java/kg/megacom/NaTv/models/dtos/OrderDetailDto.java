@@ -14,6 +14,6 @@ import java.math.BigDecimal;
 public class OrderDetailDto {
     Long id;
     ChannelDto channelId;
-    Order orderId;
+    OrderDto orderId;
     BigDecimal price;
 }

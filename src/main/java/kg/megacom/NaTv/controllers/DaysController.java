@@ -1,6 +1,11 @@
 package kg.megacom.NaTv.controllers;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import kg.megacom.NaTv.models.Request.ChannelRequest;
+import kg.megacom.NaTv.models.Request.DayRequest;
+import kg.megacom.NaTv.models.Request.TestRequest;
 import kg.megacom.NaTv.models.dtos.ChannelDto;
 import kg.megacom.NaTv.models.dtos.DaysDto;
 import kg.megacom.NaTv.services.DaysServices;
@@ -29,22 +34,29 @@ public class DaysController {
 
     }
 
-    @PostMapping("/parse")
-    public ResponseEntity<?> parse(@RequestParam List<String> days) {
+//    @PostMapping("/parse")
+//    public ResponseEntity<?> parse(@RequestBody List<ChannelRequest> channelRequests) {
+//        try {
+//            if(channelRequests.size()==0)return null;
+//            else return ResponseEntity.ok(services.stringParse(channelRequests));
+//        }catch (Exception e){
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.I_AM_A_TEAPOT);
+//        }
+//
+//    }
+    @PostMapping("/count")
+    public ResponseEntity<?> count(@RequestBody List<DayRequest> dayRequests) {
         try {
-            return ResponseEntity.ok(services.stringParse(days));
+            if(dayRequests.size()==0)return null;
+            else return ResponseEntity.ok(services.countDays(dayRequests));
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.I_AM_A_TEAPOT);
         }
 
     }
     @GetMapping("/get")
-    public  ResponseEntity<?> findById(@RequestParam Long id) {
-        try {
-            return ResponseEntity.ok(services.findById(id));
-        }catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
-        }
+    public  ResponseEntity<?> findById(@RequestParam Long id,@RequestParam int lang) {
+        return ResponseEntity.ok(services.findById(id,lang));
     }
 
     @GetMapping("/get/all")

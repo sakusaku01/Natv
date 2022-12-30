@@ -2,13 +2,13 @@ package kg.megacom.NaTv.models.mappers;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import kg.megacom.NaTv.models.dtos.DiscountDto;
 import kg.megacom.NaTv.models.entity.Discount;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2022-12-21T09:03:05+0600",
+    date = "2022-12-30T11:59:06+0600",
     comments = "version: 1.5.2.Final, compiler: javac, environment: Java 11.0.16 (Oracle Corporation)"
 )
 public class DiscountMapperImpl implements DiscountMapper {
@@ -21,6 +21,13 @@ public class DiscountMapperImpl implements DiscountMapper {
 
         Discount discount = new Discount();
 
+        discount.setId( d.getId() );
+        discount.setPercent( d.getPercent() );
+        discount.setStartDate( d.getStartDate() );
+        discount.setEndDate( d.getEndDate() );
+        discount.setMinDays( d.getMinDays() );
+        discount.setChannelId( d.getChannelId() );
+
         return discount;
     }
 
@@ -31,6 +38,13 @@ public class DiscountMapperImpl implements DiscountMapper {
         }
 
         DiscountDto discountDto = new DiscountDto();
+
+        discountDto.setId( e.getId() );
+        discountDto.setPercent( e.getPercent() );
+        discountDto.setStartDate( e.getStartDate() );
+        discountDto.setEndDate( e.getEndDate() );
+        discountDto.setMinDays( e.getMinDays() );
+        discountDto.setChannelId( e.getChannelId() );
 
         return discountDto;
     }

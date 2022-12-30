@@ -29,12 +29,8 @@ public class PricesController {
 
     }
     @GetMapping("/get")
-    public  ResponseEntity<?> findById(@RequestParam Long id) {
-        try {
-            return ResponseEntity.ok(services.findById(id));
-        }catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
-        }
+    public  ResponseEntity<?> findById(@RequestParam Long id,@RequestParam int lang) {
+        return ResponseEntity.ok(services.findById(id,lang));
     }
 
     @GetMapping("/get/all")

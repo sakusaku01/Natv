@@ -1,15 +1,17 @@
 package kg.megacom.NaTv.models.Request;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
+@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderRequest {
     String text;
@@ -17,6 +19,6 @@ public class OrderRequest {
     String phone;
     String email;
     BigDecimal totalPrice;
-    List<ChannelRequest> channelRequest;
+    List<ChannelRequest> channels;
 
 }

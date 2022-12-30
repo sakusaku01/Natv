@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface BaseServices <T>{
     T save(T t);
-    T findById(Long id);
+    T findById(Long id,int lang);
     List<T> findAll();
 }

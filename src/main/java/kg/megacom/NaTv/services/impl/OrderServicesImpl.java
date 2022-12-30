@@ -1,7 +1,10 @@
 package kg.megacom.NaTv.services.impl;
 
 import kg.megacom.NaTv.models.dtos.OrderDto;
+import kg.megacom.NaTv.models.exceptions.EntityNotFoundExc;
 import kg.megacom.NaTv.models.mappers.OrderMapper;
+import kg.megacom.NaTv.models.utils.ResourceBundle;
+import kg.megacom.NaTv.models.utils.models.Language;
 import kg.megacom.NaTv.repositories.OrderRepository;
 import kg.megacom.NaTv.services.OrderServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +23,9 @@ public class OrderServicesImpl implements OrderServices {
     }
 
     @Override
-    public OrderDto findById(Long id) {
-        return OrderMapper.INSTANCE.toDto(rep.findById(id).orElseThrow(()->new RuntimeException("error")));
+    public OrderDto findById(Long id,int lang) {
+        Language language  = Language.getLang(lang);
+        return OrderMapper.INSTANCE.toDto(rep.findById(id).orElseThrow(()->new EntityNotFoundExc(ResourceBundle.periodMessages(language,"orderNotFound"))));
     }
 
     @Override
