@@ -7,6 +7,7 @@ import kg.megacom.NaTv.models.entity.Discount;
 import kg.megacom.NaTv.models.exceptions.EntityNotFoundExc;
 import kg.megacom.NaTv.models.exceptions.ValueNotFoundExc;
 import kg.megacom.NaTv.models.mappers.OrderDetailMapper;
+import kg.megacom.NaTv.models.response.AnswerChannelResponse;
 import kg.megacom.NaTv.models.response.AnswerResponse;
 import kg.megacom.NaTv.models.status.Status;
 import kg.megacom.NaTv.models.utils.ResourceBundle;
@@ -113,7 +114,7 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
     @Transactional(Transactional.TxType.REQUIRED )
     public AnswerResponse makeOrder(OrderRequest request,int lang) {
         channelChecker(request.getChannels(),lang);
-        priceChecker(request.getChannels(),lang);
+//        priceChecker(request.getChannels(),lang);
 
         OrderDto dto = new OrderDto();
         dto.setName(request.getName());
@@ -142,9 +143,20 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
 
         daysServices.stringParse(request.getChannels(),dto);
 
-        AnswerResponse response = new AnswerResponse("Успешно");
+        List<AnswerChannelResponse> channelResponses = new ArrayList<>();
 
-        return response;
+        for (int i = 0; i < request.getChannels().size(); i++) {
+            AnswerChannelResponse channelResponse = new AnswerChannelResponse();
+            ChannelDto channelDto = channelServices.findById(request.getChannels().get(i).getChannelId(),lang);
+            channelResponse.setId(request.getChannels().get(i).getChannelId());
+            channelResponse.setName(channelDto.getName());
+            channelResponse.setPrices(allPrices.get(i));
+
+            channelResponses.add(channelResponse);
+        }
+        AnswerResponse answerResponse =new AnswerResponse(dto.getTotalPrice(),channelResponses);
+
+        return answerResponse;
     }
 
 
@@ -158,13 +170,10 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
 
     @Override
     @Transactional(Transactional.TxType.REQUIRED )
-    public void priceChecker(List<ChannelRequest> request,int lang){
-        Language language = Language.getLang(lang);
-        for (ChannelRequest channelRequest : request) {
-            pricesServices.finByPrice(channelRequest.getPrice(), lang);
+    public void priceChecker(List<ChannelRequest> request,int lang) {
+        for (int i = 0; i < request.size(); i++) {
+            pricesServices.finByPrice(request.get(i).getPrice(), lang);
         }
-
     }
-
 
 }

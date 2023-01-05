@@ -22,7 +22,9 @@ public interface ChannelRepository extends JpaRepository<Channel,Long> {
 
     @Query(value = "select c.name from tb_channel c join tb_discount td on c.id = td.tb_channel_id  order by c.order_num asc limit ?2 offset ?1*?2",nativeQuery = true)
     FilterResponse findByDiscountTrue(String name, boolean isChannelActive, BigDecimal specificPrice, BigDecimal minPrice, BigDecimal maxPrice, MaxMin descAsc);
-//    @Query("select pc,max(c.price) from Prices c join c.channelId pc where c.price =(select max(c.price) from Prices ) ")
-    @Query("select d from Channel d where d.name like 'ufc%' ")
+////    @Query("select pc,max(c.price) from Prices c join c.channelId pc where c.price =(select max(c.price) from Prices ) ")
+    @Query("select c from Channel c ,Prices p , Discount d  where c.active = ?1 and c.name = ?2")
     Channel fidn();
+
+
 }

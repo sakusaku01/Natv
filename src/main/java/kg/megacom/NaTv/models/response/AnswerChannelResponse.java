@@ -4,7 +4,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Getter
 @Setter
@@ -12,10 +11,9 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
-public class AnswerResponse {
-    BigDecimal totalPrice;
-    List<AnswerChannelResponse> channelResponses;
+public class AnswerChannelResponse {
 
-
-
+    Long id;
+    String name;
+    BigDecimal prices;
 }

@@ -46,29 +46,47 @@ public class ChannelServicesImpl implements ChannelServices {
     @Override
     public List<?> findByAll(String name, BigDecimal price, Boolean isActive,
                              Boolean isDiscount, Boolean orderNum, MaxMin maxMin){
-        StringBuilder sqlCode = new StringBuilder("select");
+        int count = 0;
+
+        StringBuilder sqlCode =
+                new StringBuilder("select c from Channel c" +
+                                  " , Prices p , Discount d");
+
         if(name != null){
-            sqlCode.append(" pc from Channel pc");
-            sqlCode.append(" where pc.name LIKE ");
-            sqlCode.append("'"+name+"%'");
-            return entityManager.createQuery(sqlCode.toString()).getResultList();
+
+            if (count != 0) {
+                sqlCode.append(" and");
+                sqlCode.append(" where c.name LIKE ");
+                sqlCode.append("'" + name + "%'");
+            }else {
+                sqlCode.append(" where c.name LIKE ");
+                sqlCode.append("'" + name + "%'");
+            }
+            count++;
+
         }
+
         if(isActive !=null){
-            sqlCode.append(" pc from Channel pc");
-            sqlCode.append(" where pc.active = ");
-            sqlCode.append(isActive);
-            return entityManager.createQuery(sqlCode.toString()).getResultList();
+            if (count != 0) {
+                sqlCode.append(" and");
+                sqlCode.append(" c.active = ");
+                sqlCode.append(isActive);
+
+            }else {
+                sqlCode.append(" where c.active = ");
+                sqlCode.append(isActive);
+            }
+
+            count++;
         }
         if(isDiscount !=null){
             sqlCode.append(" d from Discount d");
             sqlCode.append(" join d.channelId c  where d.minDays > 0");
-            return entityManager.createQuery(sqlCode.toString()).getResultList();
         }
 
         if(orderNum !=null){
             sqlCode.append(" pc from Channel pc");
             sqlCode.append(" order by pc.orderNum asc");
-            return entityManager.createQuery(sqlCode.toString()).getResultList();
         }
 
         if (price != null){
@@ -80,13 +98,11 @@ public class ChannelServicesImpl implements ChannelServices {
             sqlCode.append(" pc,c.startDate,c.endDate,c.price from Prices c");
             sqlCode.append(" join c.channelId pc where c.price = " +
                     "(select max(cc.price) from Prices cc) ");
-            return entityManager.createQuery(sqlCode.toString()).getResultList();
         }
         if (maxMin == MaxMin.MIN){
             sqlCode.append(" pc,c.startDate,c.endDate,c.price from Prices c");
             sqlCode.append(" join c.channelId pc where c.price = " +
                     "(select min(cc.price) from Prices cc) ");
-            return entityManager.createQuery(sqlCode.toString()).getResultList();
         }
 //        join Prices p ON p.tb_channel_id = pc.id where p.price =
         return entityManager.createQuery(sqlCode.toString()).getResultList();
