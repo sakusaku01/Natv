@@ -1,12 +1,10 @@
 package kg.megacom.NaTv.models.entity;
 
-import kg.megacom.NaTv.models.status.DescAsc;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.persistence.*;
 import java.math.BigDecimal;

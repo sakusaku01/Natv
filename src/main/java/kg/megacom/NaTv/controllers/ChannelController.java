@@ -2,6 +2,7 @@ package kg.megacom.NaTv.controllers;
 
 import io.swagger.annotations.Api;
 import kg.megacom.NaTv.models.dtos.ChannelDto;
+import kg.megacom.NaTv.models.status.MaxMin;
 import kg.megacom.NaTv.services.ChannelServices;
 import kg.megacom.NaTv.services.microServices.FileServiceFeign;
 import kg.megacom.NaTv.swagger.Swagger2Config;
@@ -79,10 +80,16 @@ public class ChannelController {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
         }
     }
-//    @PostMapping("/ghbdttnbrb")
-//    public List<?> ghbdtnbrb (
-//            @RequestParam(value = "price", required = false) BigDecimal price){
-//        Dao dao = new Dao();
-//        return dao.findByAll(price);
-//    }
+    @PostMapping("/ghbdttnbrb")
+    public List<?> ghbdtnbrb (
+            @RequestParam(value = "price", required = false) BigDecimal price,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "active", required = false) Boolean isActive,
+            @RequestParam(value = "discount", required = false) Boolean isDiscount,
+            @RequestParam(value = "minOrMinPrice", required = false) MaxMin minMaxPrice,
+            @RequestParam(value = "orderNum", required = false) Boolean orderNum){
+
+
+        return services.findByAll(name,price,isActive,isDiscount,orderNum,minMaxPrice);
+    }
 }

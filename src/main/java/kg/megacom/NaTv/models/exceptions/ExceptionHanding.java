@@ -13,4 +13,9 @@ public class ExceptionHanding {
     public ResponseEntity<?> handleCreateEntityException(EntityNotFoundExc ex){
         return new ResponseEntity(ExceptionResponse.getErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler({ValueNotFoundExc.class})
+    public ResponseEntity<?> handleCreateEntityException(ValueNotFoundExc ex){
+        return new ResponseEntity(ExceptionResponse.getErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+    }
 }

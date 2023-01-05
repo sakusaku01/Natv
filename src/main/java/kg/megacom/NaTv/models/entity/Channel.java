@@ -21,6 +21,6 @@ public class Channel {
     Long id;
     String name;
     String photo;
-    Boolean active;
+    Boolean  active;
     int orderNum;
 }

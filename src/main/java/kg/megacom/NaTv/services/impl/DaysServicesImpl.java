@@ -14,6 +14,7 @@ import kg.megacom.NaTv.repositories.OrderDetailRepository;
 import kg.megacom.NaTv.services.DaysServices;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 @Service
 public class DaysServicesImpl implements DaysServices {
@@ -43,12 +44,9 @@ public class DaysServicesImpl implements DaysServices {
         return DaysMapper.INSTANCE.toDtos(rep.findAll());
     }
 
-//    @Override
-//    public int stringParseOne(List<ChannelRequest> channelRequest){
-//        return 1;
-//    }
 
     @Override
+    @Transactional(Transactional.TxType.REQUIRED )
     public int stringParse(List<ChannelRequest> channelRequest, OrderDto dto){
 
         if (channelRequest.size() == 0) {
@@ -76,13 +74,11 @@ public class DaysServicesImpl implements DaysServices {
         }
 
 
-//        int length = days.get(0).length();
-//        String first = days.get(0);
-
         return countDays;
 
     }
     @Override
+    @Transactional(Transactional.TxType.REQUIRED )
     public int countDays(List<DayRequest> dayRequests){
 
         if (dayRequests.size() == 0) {
@@ -107,4 +103,5 @@ public class DaysServicesImpl implements DaysServices {
         return countDays;
 
     }
+
 }

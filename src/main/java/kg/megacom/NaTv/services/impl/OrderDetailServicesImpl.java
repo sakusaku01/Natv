@@ -5,10 +5,9 @@ import kg.megacom.NaTv.models.Request.OrderRequest;
 import kg.megacom.NaTv.models.dtos.*;
 import kg.megacom.NaTv.models.entity.Discount;
 import kg.megacom.NaTv.models.exceptions.EntityNotFoundExc;
+import kg.megacom.NaTv.models.exceptions.ValueNotFoundExc;
 import kg.megacom.NaTv.models.mappers.OrderDetailMapper;
 import kg.megacom.NaTv.models.response.AnswerResponse;
-import kg.megacom.NaTv.models.response.FilterResponse;
-import kg.megacom.NaTv.models.status.DescAsc;
 import kg.megacom.NaTv.models.status.Status;
 import kg.megacom.NaTv.models.utils.ResourceBundle;
 import kg.megacom.NaTv.models.utils.models.Language;
@@ -18,6 +17,7 @@ import kg.megacom.NaTv.repositories.OrderDetailRepository;
 import kg.megacom.NaTv.services.*;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -63,6 +63,7 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
     }
 
     @Override
+    @Transactional(Transactional.TxType.REQUIRED )
     public Map<String,List<BigDecimal>> countText(String text, List<ChannelRequest> requests) {
 
         BigDecimal totalPrice = BigDecimal.ZERO;
@@ -78,21 +79,23 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
             Discount maxDaySale = discountRepository.findDiscountMinDays(countOfDays,channelId);
             if (maxDaySale==null) {
                 BigDecimal nullPrice = pricesDto.getPrice().multiply(BigDecimal.valueOf(str.length()));
-                allPrices.add(nullPrice);
-                totalPrice = totalPrice.add(nullPrice);
+                BigDecimal allNulDaysPrice = nullPrice.multiply(BigDecimal.valueOf(countOfDays));
+                allPrices.add(allNulDaysPrice);
+                totalPrice = totalPrice.add(allNulDaysPrice);
                 continue;
             }
 
             BigDecimal sale = pricesDto.getPrice().multiply(BigDecimal.valueOf(maxDaySale.getPercent()).divide(BigDecimal.valueOf(100)));
             BigDecimal salePrice = pricesDto.getPrice().subtract(sale);
             BigDecimal price = salePrice.multiply(BigDecimal.valueOf(str.length()));
-            allPrices.add(price);
-            totalPrice = totalPrice.add(price);
+            BigDecimal allDaysPrice = price.multiply(BigDecimal.valueOf(countOfDays));
+            allPrices.add(allDaysPrice);
+            totalPrice = totalPrice.add(allDaysPrice);
 
         }
 
         List<BigDecimal> all = Arrays.asList(totalPrice);
-        Map<String,List<BigDecimal>> map =new HashMap();
+        Map<String,List<BigDecimal>> map =new HashMap<>();
         map.put("totalPrice",all);
         map.put("allPrices",allPrices);
         return map;
@@ -107,7 +110,11 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
 
 
     @Override
+    @Transactional(Transactional.TxType.REQUIRED )
     public AnswerResponse makeOrder(OrderRequest request,int lang) {
+        channelChecker(request.getChannels(),lang);
+        priceChecker(request.getChannels(),lang);
+
         OrderDto dto = new OrderDto();
         dto.setName(request.getName());
         dto.setPhone(request.getPhone());
@@ -132,6 +139,7 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
             orderDetaildto.setOrderId(dto);
             save(orderDetaildto);
         }
+
         daysServices.stringParse(request.getChannels(),dto);
 
         AnswerResponse response = new AnswerResponse("Успешно");
@@ -141,14 +149,21 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
 
 
     @Override
-    public FilterResponse filter(String name, boolean discount, boolean isChannelActive,
-                                 BigDecimal specificPrice, BigDecimal minPrice, BigDecimal maxPrice,
-                                 DescAsc descAsc) {
-        if(discount){
-            channelRepository.findByDiscountTrue(name,isChannelActive,specificPrice,minPrice,maxPrice,descAsc);
+    @Transactional(Transactional.TxType.REQUIRED )
+    public void channelChecker(List<ChannelRequest> request,int lang){
+        for (ChannelRequest channelRequest : request) {
+            channelServices.findById(channelRequest.getChannelId(), lang);
+        }
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.REQUIRED )
+    public void priceChecker(List<ChannelRequest> request,int lang){
+        Language language = Language.getLang(lang);
+        for (ChannelRequest channelRequest : request) {
+            pricesServices.finByPrice(channelRequest.getPrice(), lang);
         }
 
-        return null;
     }
 
 
