@@ -4,8 +4,7 @@ import kg.megacom.NaTv.models.status.Status;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+
 import java.math.BigDecimal;
 import java.util.Date;
 @Setter

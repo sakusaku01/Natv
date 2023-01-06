@@ -4,7 +4,6 @@ import kg.megacom.NaTv.models.dtos.ChannelDto;
 import kg.megacom.NaTv.models.response.ChannelResponse;
 import kg.megacom.NaTv.models.response.Response;
 import kg.megacom.NaTv.models.status.MaxMin;
-import kg.megacom.NaTv.services.microServices.Photo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
@@ -19,5 +18,5 @@ public interface ChannelServices extends BaseServices<ChannelDto>{
     List<?> findByAll(String name, BigDecimal price, Boolean isActive,
                       Boolean isDiscount, Boolean orderNum, MaxMin maxMin);
 
-    String saveChannel(String name, MultipartFile multipartFile, int orderNum);
+    String saveChannel(String name, MultipartFile multipartFile, int orderNum,Boolean isActive,int lang);
 }

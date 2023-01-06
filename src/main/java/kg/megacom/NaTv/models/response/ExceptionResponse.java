@@ -1,7 +1,7 @@
 package kg.megacom.NaTv.models.response;
 
-import kg.megacom.NaTv.models.utils.ResourceBundle;
-import kg.megacom.NaTv.models.utils.models.Language;
+import kg.megacom.NaTv.utils.ResourceBundle;
+import kg.megacom.NaTv.utils.models.Language;
 import lombok.Builder;
 import lombok.Data;
 

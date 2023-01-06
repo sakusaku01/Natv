@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-@EnableFeignClients("kg.megacom.NaTv.services.microServices")
+@EnableFeignClients("kg.megacom.NaTv.microServices")
 public class NaTvApplication {
 
 	public static void main(String[] args) {

@@ -1,5 +1,6 @@
 package kg.megacom.NaTv.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +26,10 @@ public class Prices {
     @Temporal(TemporalType.DATE)
     Date endDate;
     BigDecimal price;
+
     @ManyToOne
     @JoinColumn(name = "tb_channel_id", referencedColumnName = "id")
     Channel channelId;
+
+
 }

@@ -1,11 +1,12 @@
 package kg.megacom.NaTv.services.impl;
 
 import kg.megacom.NaTv.models.dtos.PricesDto;
-import kg.megacom.NaTv.models.exceptions.EntityNotFoundExc;
-import kg.megacom.NaTv.models.exceptions.ValueNotFoundExc;
-import kg.megacom.NaTv.models.mappers.PricesMapper;
-import kg.megacom.NaTv.models.utils.ResourceBundle;
-import kg.megacom.NaTv.models.utils.models.Language;
+import kg.megacom.NaTv.exceptions.EntityNotFoundExc;
+import kg.megacom.NaTv.exceptions.ValueNotFoundExc;
+import kg.megacom.NaTv.mappers.PricesMapper;
+import kg.megacom.NaTv.services.ChannelServices;
+import kg.megacom.NaTv.utils.ResourceBundle;
+import kg.megacom.NaTv.utils.models.Language;
 import kg.megacom.NaTv.repositories.PricesRepository;
 import kg.megacom.NaTv.services.PricesServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +18,18 @@ import java.util.List;
 @Service
 public class PricesServicesImpl implements PricesServices {
 
-    @Autowired
-    private PricesRepository rep;
+    private final PricesRepository rep;
+    private final ChannelServices services;
+
+    public PricesServicesImpl(PricesRepository rep, ChannelServices services) {
+        this.rep = rep;
+        this.services = services;
+    }
 
 
     @Override
-    public PricesDto save(PricesDto pricesDto) {
+    public PricesDto save(PricesDto pricesDto,int lang) {
+        services.findById(pricesDto.getChannelId().getId(),lang);
         return PricesMapper.INSTANCE.toDto(rep.save(PricesMapper.INSTANCE.toEntity(pricesDto)));
     }
 

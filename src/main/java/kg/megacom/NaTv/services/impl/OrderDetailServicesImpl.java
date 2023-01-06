@@ -1,18 +1,17 @@
 package kg.megacom.NaTv.services.impl;
 
+import kg.megacom.NaTv.exceptions.ValueNotFoundExc;
 import kg.megacom.NaTv.models.Request.ChannelRequest;
 import kg.megacom.NaTv.models.Request.OrderRequest;
 import kg.megacom.NaTv.models.dtos.*;
 import kg.megacom.NaTv.models.entity.Discount;
-import kg.megacom.NaTv.models.exceptions.EntityNotFoundExc;
-import kg.megacom.NaTv.models.exceptions.ValueNotFoundExc;
-import kg.megacom.NaTv.models.mappers.OrderDetailMapper;
+import kg.megacom.NaTv.exceptions.EntityNotFoundExc;
+import kg.megacom.NaTv.mappers.OrderDetailMapper;
 import kg.megacom.NaTv.models.response.AnswerChannelResponse;
 import kg.megacom.NaTv.models.response.AnswerResponse;
 import kg.megacom.NaTv.models.status.Status;
-import kg.megacom.NaTv.models.utils.ResourceBundle;
-import kg.megacom.NaTv.models.utils.models.Language;
-import kg.megacom.NaTv.repositories.ChannelRepository;
+import kg.megacom.NaTv.utils.ResourceBundle;
+import kg.megacom.NaTv.utils.models.Language;
 import kg.megacom.NaTv.repositories.DiscountRepository;
 import kg.megacom.NaTv.repositories.OrderDetailRepository;
 import kg.megacom.NaTv.services.*;
@@ -27,8 +26,7 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
 
     private final OrderDetailRepository rep;
     private final OrderServices services;
-
-    private final ChannelRepository channelRepository;
+    private final OrderServices orderServices;
 
     private final ChannelServices channelServices;
 
@@ -36,10 +34,10 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
     private final PricesServices pricesServices;
     private final DiscountRepository discountRepository;
 
-    public OrderDetailServicesImpl(OrderDetailRepository rep, OrderServices services, ChannelRepository channelRepository, ChannelServices channelServices, DaysServices daysServices, PricesServices pricesServices, DiscountRepository discountRepository) {
+    public OrderDetailServicesImpl(OrderDetailRepository rep, OrderServices services, OrderServices orderServices, ChannelServices channelServices, DaysServices daysServices, PricesServices pricesServices, DiscountRepository discountRepository) {
         this.rep = rep;
         this.services = services;
-        this.channelRepository = channelRepository;
+        this.orderServices = orderServices;
         this.channelServices = channelServices;
         this.daysServices = daysServices;
         this.pricesServices = pricesServices;
@@ -48,7 +46,9 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
 
 
     @Override
-    public OrderDetailDto save(OrderDetailDto orderDetailDto) {
+    public OrderDetailDto save(OrderDetailDto orderDetailDto,int lang) {
+        channelServices.findById(orderDetailDto.getChannelId().getId(),lang);
+        orderServices.findById(orderDetailDto.getOrderId().getId(),lang);
         return OrderDetailMapper.INSTANCE.toDto(rep.save(OrderDetailMapper.INSTANCE.toEntity(orderDetailDto)));
     }
 
@@ -62,13 +62,41 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
     public List<OrderDetailDto> findAll() {
         return OrderDetailMapper.INSTANCE.toDtos(rep.findAll());
     }
+    @Override
+    @Transactional(Transactional.TxType.REQUIRED )
+    public Map<String,List<BigDecimal>> countTextWhDis(String text, List<ChannelRequest> requests) {
+
+        BigDecimal totalPriceWhDis = BigDecimal.ZERO;
+        List<BigDecimal> allPricesWhDis = new ArrayList<>();
+        String str = text.replaceAll("\\s", "");
+        for (int i = 0; i < requests.size(); i++) {
+
+            PricesDto pricesDto = pricesServices.findByChannel(requests.get(i).getChannelId());
+
+            int countOfDays = daysServices.countDays(requests.get(i).getDays());
+
+            BigDecimal nullPrice = pricesDto.getPrice().multiply(BigDecimal.valueOf(str.length()));
+            BigDecimal allNulDaysPrice = nullPrice.multiply(BigDecimal.valueOf(countOfDays));
+            allPricesWhDis.add(allNulDaysPrice);
+            totalPriceWhDis = totalPriceWhDis.add(allNulDaysPrice);
+
+
+
+        }
+
+        List<BigDecimal> allWhDis = List.of(totalPriceWhDis);
+        Map<String,List<BigDecimal>> map =new HashMap<>();
+        map.put("totalPriceWhDis",allWhDis);
+        map.put("allPricesWhDis",allPricesWhDis);
+        return map;
+    }
 
     @Override
     @Transactional(Transactional.TxType.REQUIRED )
     public Map<String,List<BigDecimal>> countText(String text, List<ChannelRequest> requests) {
 
         BigDecimal totalPrice = BigDecimal.ZERO;
-        List<BigDecimal> allPrices = new ArrayList<BigDecimal>();
+        List<BigDecimal> allPrices = new ArrayList<>();
         String str = text.replaceAll("\\s", "");
         for (int i = 0; i < requests.size(); i++) {
 
@@ -95,18 +123,12 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
 
         }
 
-        List<BigDecimal> all = Arrays.asList(totalPrice);
+        List<BigDecimal> all = List.of(totalPrice);
         Map<String,List<BigDecimal>> map =new HashMap<>();
         map.put("totalPrice",all);
         map.put("allPrices",allPrices);
         return map;
     }
-    //1-количество дней
-    //2-скидочные дни по количеству дней(3,5,7) и по дате
-    //3-цена в зависимости от даты
-    //4-рассчет стоимости за день
-    //5-сумма всех дней
-    //6-тотал-прайс
 
 
 
@@ -114,7 +136,10 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
     @Transactional(Transactional.TxType.REQUIRED )
     public AnswerResponse makeOrder(OrderRequest request,int lang) {
         channelChecker(request.getChannels(),lang);
-//        priceChecker(request.getChannels(),lang);
+        if(request.getText().isEmpty()){
+            Language language = Language.getLang(lang);
+            throw new ValueNotFoundExc(ResourceBundle.periodMessages(language,"textNotFound"));
+        }
 
         OrderDto dto = new OrderDto();
         dto.setName(request.getName());
@@ -129,7 +154,7 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
         dto.setAddDate(new Date());
         dto.setEditDate(new Date());
 
-        dto=services.save(dto);
+        dto=services.save(dto,lang);
 
         for (int i = 0; i <request.getChannels().size() ; i++) {
             OrderDetailDto orderDetaildto = new OrderDetailDto();
@@ -138,10 +163,14 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
             Long channelId = request.getChannels().get(i).getChannelId();
             orderDetaildto.setChannelId(channelServices.findById(channelId,lang));
             orderDetaildto.setOrderId(dto);
-            save(orderDetaildto);
+            save(orderDetaildto,lang);
         }
 
-        daysServices.stringParse(request.getChannels(),dto);
+        daysServices.stringParse(request.getChannels(),dto,lang);
+
+        Map<String,List<BigDecimal>> pricesWhDis = countTextWhDis(request.getText(),request.getChannels());
+        List<BigDecimal> totalPriceWhDis = pricesWhDis.get("totalPriceWhDis");
+        List<BigDecimal> allPricesWhDis = pricesWhDis.get("allPricesWhDis");
 
         List<AnswerChannelResponse> channelResponses = new ArrayList<>();
 
@@ -151,12 +180,13 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
             channelResponse.setId(request.getChannels().get(i).getChannelId());
             channelResponse.setName(channelDto.getName());
             channelResponse.setPrices(allPrices.get(i));
+            channelResponse.setPriceWithoutDiscount(allPricesWhDis.get(i));
+
 
             channelResponses.add(channelResponse);
         }
-        AnswerResponse answerResponse =new AnswerResponse(dto.getTotalPrice(),channelResponses);
 
-        return answerResponse;
+        return new AnswerResponse(dto.getTotalPrice(),totalPriceWhDis.get(0),channelResponses);
     }
 
 
@@ -171,8 +201,8 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
     @Override
     @Transactional(Transactional.TxType.REQUIRED )
     public void priceChecker(List<ChannelRequest> request,int lang) {
-        for (int i = 0; i < request.size(); i++) {
-            pricesServices.finByPrice(request.get(i).getPrice(), lang);
+        for (ChannelRequest channelRequest : request) {
+            pricesServices.finByPrice(channelRequest.getPrice(), lang);
         }
     }
 

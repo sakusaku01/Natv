@@ -14,6 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 public class AnswerResponse {
     BigDecimal totalPrice;
+
+    BigDecimal totalPriceWithoutDiscount;
     List<AnswerChannelResponse> channelResponses;
 
 

@@ -18,9 +18,9 @@ public class DiscountController {
     private DiscountServices services;
 
     @PostMapping("/save")
-    public ResponseEntity<?> save(@RequestBody DiscountDto dto) {
+    public ResponseEntity<?> save(@RequestBody DiscountDto dto,int lang) {
         try {
-            return ResponseEntity.ok(services.save(dto));
+            return ResponseEntity.ok(services.save(dto,lang));
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.I_AM_A_TEAPOT);
         }

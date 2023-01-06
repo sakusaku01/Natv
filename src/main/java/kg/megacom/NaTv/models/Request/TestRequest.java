@@ -1,7 +1,6 @@
 package kg.megacom.NaTv.models.Request;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;

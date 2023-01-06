@@ -1,25 +1,24 @@
 package kg.megacom.NaTv.services.impl;
 
+import kg.megacom.NaTv.exceptions.ValueNotFoundExc;
 import kg.megacom.NaTv.models.dtos.ChannelDto;
-import kg.megacom.NaTv.models.entity.Filter;
-import kg.megacom.NaTv.models.exceptions.EntityNotFoundExc;
-import kg.megacom.NaTv.models.mappers.ChannelMapper;
+import kg.megacom.NaTv.exceptions.EntityNotFoundExc;
+import kg.megacom.NaTv.mappers.ChannelMapper;
 import kg.megacom.NaTv.models.response.ChannelResponse;
 import kg.megacom.NaTv.models.response.Response;
+
 import kg.megacom.NaTv.models.status.MaxMin;
-import kg.megacom.NaTv.models.utils.ResourceBundle;
-import kg.megacom.NaTv.models.utils.models.Language;
+import kg.megacom.NaTv.utils.ResourceBundle;
+import kg.megacom.NaTv.utils.models.Language;
 import kg.megacom.NaTv.repositories.ChannelRepository;
 import kg.megacom.NaTv.repositories.DiscountRepository;
 import kg.megacom.NaTv.services.ChannelServices;
-import kg.megacom.NaTv.services.microServices.FileServiceFeign;
+import kg.megacom.NaTv.microServices.FileServiceFeign;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -50,7 +49,7 @@ public class ChannelServicesImpl implements ChannelServices {
 
         StringBuilder sqlCode =
                 new StringBuilder("select c from Channel c" +
-                                  " , Prices p , Discount d");
+                                  " inner join c.prices p inner join c.discounts d");
 
         if(name != null){
 
@@ -69,7 +68,7 @@ public class ChannelServicesImpl implements ChannelServices {
         if(isActive !=null){
             if (count != 0) {
                 sqlCode.append(" and");
-                sqlCode.append(" c.active = ");
+                sqlCode.append(" where c.active = ");
                 sqlCode.append(isActive);
 
             }else {
@@ -79,50 +78,82 @@ public class ChannelServicesImpl implements ChannelServices {
 
             count++;
         }
-        if(isDiscount !=null){
-            sqlCode.append(" d from Discount d");
-            sqlCode.append(" join d.channelId c  where d.minDays > 0");
+
+        if(isDiscount !=null&& isDiscount){
+            if (count != 0) {
+                sqlCode.append(" and");
+                sqlCode.append(" where d.minDays > 0");
+            }else {
+                sqlCode.append(" where d.minDays > 0");
+            }
+
+            count++;
+
+        }
+        if(isDiscount !=null && !isDiscount){
+            if (count != 0) {
+                sqlCode.append(" and");
+                sqlCode.append(" where d is null");
+            }else {
+                sqlCode.append(" where d is null");
+            }
+
+            count++;
+
         }
 
-        if(orderNum !=null){
-            sqlCode.append(" pc from Channel pc");
-            sqlCode.append(" order by pc.orderNum asc");
-        }
 
         if (price != null){
-            sqlCode.append(" pc,c.price from Channel pc");
-            sqlCode.append(" , Prices c where c.price = ");
-            sqlCode.append(price);
+            if (count != 0) {
+                sqlCode.append(" and");
+                sqlCode.append(" where p.price = ");
+                sqlCode.append(price);
+            }else {
+                sqlCode.append(" where p.price = ");
+                sqlCode.append(price);
+            }
+
+            count++;
+
+        }
+        if(orderNum !=null){
+
+            sqlCode.append(" order by c.orderNum ASC");
+            count++;
+
         }
         if (maxMin == MaxMin.MAX){
-            sqlCode.append(" pc,c.startDate,c.endDate,c.price from Prices c");
-            sqlCode.append(" join c.channelId pc where c.price = " +
-                    "(select max(cc.price) from Prices cc) ");
+
+            sqlCode.append(" GROUP BY c.id order by MAX(p.price) DESC");
+            count++;
+
         }
         if (maxMin == MaxMin.MIN){
-            sqlCode.append(" pc,c.startDate,c.endDate,c.price from Prices c");
-            sqlCode.append(" join c.channelId pc where c.price = " +
-                    "(select min(cc.price) from Prices cc) ");
+
+            sqlCode.append(" GROUP BY c.id order by MIN(p.price) ASC");
+
+            count++;
         }
-//        join Prices p ON p.tb_channel_id = pc.id where p.price =
+
         return entityManager.createQuery(sqlCode.toString()).getResultList();
+
     }
 
 
     @Override
-    public ChannelDto save(ChannelDto channelDto) {
+    public ChannelDto save(ChannelDto channelDto,int lang) {
         return ChannelMapper.INSTANCE.toDto(rep.save(ChannelMapper.INSTANCE.toEntity(channelDto)));
     }
 
     @Override
     @Transactional(Transactional.TxType.REQUIRED )
-    public String saveChannel(String name, MultipartFile multipartFile, int orderNum) {
+    public String saveChannel(String name, MultipartFile multipartFile, int orderNum,Boolean isActive,int lang) {
         ChannelDto channelDto = new ChannelDto();
         channelDto.setName(name);
-        channelDto.setActive(true);
+        channelDto.setActive(isActive);
         channelDto.setOrderNum(orderNum);
         channelDto.setPhoto(serviceFeign.storeFile(multipartFile).getDownloadUri());
-        ChannelDto dto = save(channelDto);
+        ChannelDto dto = save(channelDto,lang);
         return dto.getPhoto();
 
     }
@@ -136,7 +167,11 @@ public class ChannelServicesImpl implements ChannelServices {
 
     @Override
     public List<ChannelDto> findAll() {
-        return ChannelMapper.INSTANCE.toDtos(rep.findAll());
+        Language language = Language.getLang(1);
+         if(ChannelMapper.INSTANCE.toDtos(rep.findAll()).isEmpty()){
+             throw new ValueNotFoundExc(ResourceBundle.periodMessages(language,"channelsNotCreated"));
+         }
+         return ChannelMapper.INSTANCE.toDtos(rep.findAll());
     }
 
     @Override

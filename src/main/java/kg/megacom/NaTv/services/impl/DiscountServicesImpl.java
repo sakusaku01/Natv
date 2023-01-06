@@ -1,10 +1,11 @@
 package kg.megacom.NaTv.services.impl;
 
 import kg.megacom.NaTv.models.dtos.DiscountDto;
-import kg.megacom.NaTv.models.exceptions.EntityNotFoundExc;
-import kg.megacom.NaTv.models.mappers.DiscountMapper;
-import kg.megacom.NaTv.models.utils.ResourceBundle;
-import kg.megacom.NaTv.models.utils.models.Language;
+import kg.megacom.NaTv.exceptions.EntityNotFoundExc;
+import kg.megacom.NaTv.mappers.DiscountMapper;
+import kg.megacom.NaTv.services.ChannelServices;
+import kg.megacom.NaTv.utils.ResourceBundle;
+import kg.megacom.NaTv.utils.models.Language;
 import kg.megacom.NaTv.repositories.DiscountRepository;
 import kg.megacom.NaTv.services.DiscountServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,17 @@ import java.util.List;
 @Service
 public class DiscountServicesImpl implements DiscountServices {
 
-    @Autowired
-    private DiscountRepository rep;
+    private final DiscountRepository rep;
+    private final ChannelServices services;
+
+    public DiscountServicesImpl(DiscountRepository rep, ChannelServices services) {
+        this.rep = rep;
+        this.services = services;
+    }
 
     @Override
-    public DiscountDto save(DiscountDto discountDto) {
+    public DiscountDto save(DiscountDto discountDto,int lang) {
+        services.findById(discountDto.getChannelId().getId(),lang);
         return DiscountMapper.INSTANCE.toDto(rep.save(DiscountMapper.INSTANCE.toEntity(discountDto)));
     }
 

@@ -3,7 +3,6 @@ package kg.megacom.NaTv.repositories;
 import kg.megacom.NaTv.models.entity.Discount;
 import kg.megacom.NaTv.models.response.DiscountResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 

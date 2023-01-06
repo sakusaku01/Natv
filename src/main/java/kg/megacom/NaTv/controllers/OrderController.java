@@ -7,27 +7,28 @@ import kg.megacom.NaTv.models.dtos.OrderDto;
 import kg.megacom.NaTv.services.OrderDetailServices;
 import kg.megacom.NaTv.services.OrderServices;
 import kg.megacom.NaTv.swagger.Swagger2Config;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/or")
 @Api(tags = Swagger2Config.Order)
 public class OrderController {
-    @Autowired
-    private OrderServices services;
+    private final OrderServices services;
 
-    @Autowired
-    private OrderDetailServices od;
+    private final OrderDetailServices od;
+
+    public OrderController(OrderServices services, OrderDetailServices od) {
+        this.services = services;
+        this.od = od;
+    }
 
     @PostMapping("/save")
-    public ResponseEntity<?> save(@RequestBody OrderDto dto) {
+    public ResponseEntity<?> save(@RequestBody OrderDto dto,int lang) {
         try {
-            return ResponseEntity.ok(services.save(dto));
+            return ResponseEntity.ok(services.save(dto,lang));
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.I_AM_A_TEAPOT);
         }

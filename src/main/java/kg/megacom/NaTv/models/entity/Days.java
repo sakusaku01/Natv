@@ -19,7 +19,7 @@ public class Days {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @ManyToOne
-    @JoinColumn(name = "orderDetail_id")
+    @JoinColumn(name = "order_detail_id")
     OrderDetail orderDetailId;
     int day;
 

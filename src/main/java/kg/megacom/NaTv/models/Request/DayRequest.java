@@ -1,6 +1,6 @@
 package kg.megacom.NaTv.models.Request;
 
-import io.swagger.annotations.ApiModel;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

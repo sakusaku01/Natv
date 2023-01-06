@@ -1,10 +1,10 @@
 package kg.megacom.NaTv.services.impl;
 
 import kg.megacom.NaTv.models.dtos.OrderDto;
-import kg.megacom.NaTv.models.exceptions.EntityNotFoundExc;
-import kg.megacom.NaTv.models.mappers.OrderMapper;
-import kg.megacom.NaTv.models.utils.ResourceBundle;
-import kg.megacom.NaTv.models.utils.models.Language;
+import kg.megacom.NaTv.exceptions.EntityNotFoundExc;
+import kg.megacom.NaTv.mappers.OrderMapper;
+import kg.megacom.NaTv.utils.ResourceBundle;
+import kg.megacom.NaTv.utils.models.Language;
 import kg.megacom.NaTv.repositories.OrderRepository;
 import kg.megacom.NaTv.services.OrderServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public class OrderServicesImpl implements OrderServices {
     private OrderRepository rep;
 
     @Override
-    public OrderDto save(OrderDto orderDto) {
+    public OrderDto save(OrderDto orderDto,int lang) {
         return OrderMapper.INSTANCE.toDto(rep.save(OrderMapper.INSTANCE.toEntity(orderDto)));
     }
 

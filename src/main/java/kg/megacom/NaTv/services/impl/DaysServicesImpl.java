@@ -4,11 +4,10 @@ import kg.megacom.NaTv.models.Request.ChannelRequest;
 import kg.megacom.NaTv.models.Request.DayRequest;
 import kg.megacom.NaTv.models.dtos.DaysDto;
 import kg.megacom.NaTv.models.dtos.OrderDto;
-import kg.megacom.NaTv.models.entity.Order;
-import kg.megacom.NaTv.models.exceptions.EntityNotFoundExc;
-import kg.megacom.NaTv.models.mappers.DaysMapper;
-import kg.megacom.NaTv.models.utils.ResourceBundle;
-import kg.megacom.NaTv.models.utils.models.Language;
+import kg.megacom.NaTv.exceptions.EntityNotFoundExc;
+import kg.megacom.NaTv.mappers.DaysMapper;
+import kg.megacom.NaTv.utils.ResourceBundle;
+import kg.megacom.NaTv.utils.models.Language;
 import kg.megacom.NaTv.repositories.DaysRepository;
 import kg.megacom.NaTv.repositories.OrderDetailRepository;
 import kg.megacom.NaTv.services.DaysServices;
@@ -29,7 +28,8 @@ public class DaysServicesImpl implements DaysServices {
     }
 
     @Override
-    public DaysDto save(DaysDto daysDto) {
+    public DaysDto save(DaysDto daysDto,int lang) {
+
         return DaysMapper.INSTANCE.toDto(rep.save(DaysMapper.INSTANCE.toEntity(daysDto)));
     }
 
@@ -47,7 +47,7 @@ public class DaysServicesImpl implements DaysServices {
 
     @Override
     @Transactional(Transactional.TxType.REQUIRED )
-    public int stringParse(List<ChannelRequest> channelRequest, OrderDto dto){
+    public int stringParse(List<ChannelRequest> channelRequest, OrderDto dto,int lang){
 
         if (channelRequest.size() == 0) {
             return 0;
@@ -70,7 +70,7 @@ public class DaysServicesImpl implements DaysServices {
             DaysDto daysDto = new DaysDto();
             daysDto.setDay(countDays);
             daysDto.setOrderDetailId(orderDetailRepository.findOrderDetailByChannelId(channelRequest.get(i).getChannelId(),dto.getId()));
-            save(daysDto);
+            save(daysDto,lang);
         }
 
 
@@ -84,7 +84,7 @@ public class DaysServicesImpl implements DaysServices {
         if (dayRequests.size() == 0) {
             return 0;
         }
-        int countDays = 0;
+        int countDays ;
 
         int length=dayRequests.get(0).getDay().length();
         String first = dayRequests.get(0).getDay();

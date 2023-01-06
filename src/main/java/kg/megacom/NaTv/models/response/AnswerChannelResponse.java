@@ -16,4 +16,5 @@ public class AnswerChannelResponse {
     Long id;
     String name;
     BigDecimal prices;
+    BigDecimal priceWithoutDiscount;
 }

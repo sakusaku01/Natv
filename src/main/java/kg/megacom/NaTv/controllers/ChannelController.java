@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import kg.megacom.NaTv.models.dtos.ChannelDto;
 import kg.megacom.NaTv.models.status.MaxMin;
 import kg.megacom.NaTv.services.ChannelServices;
-import kg.megacom.NaTv.services.microServices.FileServiceFeign;
+
 import kg.megacom.NaTv.swagger.Swagger2Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,25 +22,14 @@ public class ChannelController {
     @Autowired
     private ChannelServices services;
 
-//    @Autowired
-//    private FileServiceFeign feign;
-
-//    @PostMapping("/upload/photo")
-//    public String saveChannel(@RequestParam String name,
-//                              @RequestParam MultipartFile multipartFile,
-//                              @RequestParam int orderNum) {
-//
-//        Photo fileName = feign.storeFile(multipartFile);
-//
-//        return fileName;
-//
-//    }
     @PostMapping("/save/channel")
     public ResponseEntity<?> saveChannel(@RequestParam String name,
                                          @RequestParam MultipartFile multipartFile,
-                                         @RequestParam int orderNum) {
+                                         @RequestParam int orderNum,
+                                         @RequestParam Boolean isActive,
+                                         @RequestParam int lang) {
         try {
-            return ResponseEntity.ok(services.saveChannel(name,multipartFile,orderNum));
+            return ResponseEntity.ok(services.saveChannel(name,multipartFile,orderNum,isActive,lang));
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.I_AM_A_TEAPOT);
         }
@@ -48,9 +37,9 @@ public class ChannelController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<?> save(@RequestBody ChannelDto dto) {
+    public ResponseEntity<?> save(@RequestBody ChannelDto dto, int lang) {
         try {
-            return ResponseEntity.ok(services.save(dto));
+            return ResponseEntity.ok(services.save(dto,lang));
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.I_AM_A_TEAPOT);
         }
@@ -80,8 +69,8 @@ public class ChannelController {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
         }
     }
-    @PostMapping("/ghbdttnbrb")
-    public List<?> ghbdtnbrb (
+    @PostMapping("/get/filter")
+    public List<?> getFilter (
             @RequestParam(value = "price", required = false) BigDecimal price,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "active", required = false) Boolean isActive,
