@@ -46,7 +46,7 @@ public class Swagger2Config {
 
     private ApiInfo apiEndPointsInfo() {
         return new ApiInfoBuilder().title("Сервис записи бегущей строки на тв")
-                .description("NaTv Service")
+                .description("РАЗМЕЩЕНИЕ БЕГУЩЕЙ СТРОКИ НА ТЕЛЕВИЗИОННЫХ КАНАЛАХ КЫРГЫЗСТАНА")
                 .version("1.0.0")
                 .build();
     }

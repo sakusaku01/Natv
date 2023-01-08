@@ -1,5 +1,6 @@
 package kg.megacom.NaTv.services.impl;
 
+import kg.megacom.NaTv.exceptions.ValueNotFoundExc;
 import kg.megacom.NaTv.models.Request.ChannelRequest;
 import kg.megacom.NaTv.models.Request.DayRequest;
 import kg.megacom.NaTv.models.dtos.DaysDto;
@@ -40,7 +41,11 @@ public class DaysServicesImpl implements DaysServices {
     }
 
     @Override
-    public List<DaysDto> findAll() {
+    public List<DaysDto> findAll(int lang) {
+        Language language = Language.getLang(lang);
+        if (DaysMapper.INSTANCE.toDtos(rep.findAll()).isEmpty()){
+            throw new ValueNotFoundExc(ResourceBundle.periodMessages(language,"daysNotCreated"));
+        }
         return DaysMapper.INSTANCE.toDtos(rep.findAll());
     }
 

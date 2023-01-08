@@ -15,6 +15,8 @@ public interface ChannelServices extends BaseServices<ChannelDto>{
 
     List<ChannelResponse> channelsResponseDiscounts(int page,int size);
 
+
+
     List<?> findByAll(String name, BigDecimal price, Boolean isActive,
                       Boolean isDiscount, Boolean orderNum, MaxMin maxMin);
 

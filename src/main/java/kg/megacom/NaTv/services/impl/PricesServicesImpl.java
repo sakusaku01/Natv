@@ -9,7 +9,6 @@ import kg.megacom.NaTv.utils.ResourceBundle;
 import kg.megacom.NaTv.utils.models.Language;
 import kg.megacom.NaTv.repositories.PricesRepository;
 import kg.megacom.NaTv.services.PricesServices;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -28,7 +27,7 @@ public class PricesServicesImpl implements PricesServices {
 
 
     @Override
-    public PricesDto save(PricesDto pricesDto,int lang) {
+    public PricesDto save(PricesDto pricesDto, int lang) {
         services.findById(pricesDto.getChannelId().getId(),lang);
         return PricesMapper.INSTANCE.toDto(rep.save(PricesMapper.INSTANCE.toEntity(pricesDto)));
     }
@@ -40,7 +39,11 @@ public class PricesServicesImpl implements PricesServices {
     }
 
     @Override
-    public List<PricesDto> findAll() {
+    public List<PricesDto> findAll(int lang) {
+        Language language = Language.getLang(lang);
+        if(PricesMapper.INSTANCE.toDtos(rep.findAll()).isEmpty()){
+            throw new ValueNotFoundExc(ResourceBundle.periodMessages(language,"pricesNotCreated"));
+        }
         return PricesMapper.INSTANCE.toDtos(rep.findAll());
     }
 

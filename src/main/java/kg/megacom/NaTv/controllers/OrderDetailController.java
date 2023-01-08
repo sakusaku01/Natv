@@ -1,6 +1,7 @@
 package kg.megacom.NaTv.controllers;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import kg.megacom.NaTv.models.dtos.OrderDetailDto;
 import kg.megacom.NaTv.services.OrderDetailServices;
 import kg.megacom.NaTv.swagger.Swagger2Config;
@@ -19,6 +20,7 @@ public class OrderDetailController {
 
 
     @PostMapping("/save")
+    @ApiOperation(value = "Сохранение деталей заказов")
     public ResponseEntity<?> save(@RequestBody OrderDetailDto dto,int lang) {
         try {
             return ResponseEntity.ok(services.save(dto,lang));
@@ -29,14 +31,16 @@ public class OrderDetailController {
     }
 
     @GetMapping("/get")
+    @ApiOperation(value = "Поиск деталей заказов по id")
     public  ResponseEntity<?> findById(@RequestParam Long id,@RequestParam int lang) {
         return ResponseEntity.ok(services.findById(id,lang));
     }
 
     @GetMapping("/get/all")
-    public ResponseEntity<?> findAll() {
+    @ApiOperation(value = "Поиск всех деталей заказов")
+    public ResponseEntity<?> findAll(@RequestParam int lang) {
         try {
-            return ResponseEntity.ok(services.findAll());
+            return ResponseEntity.ok(services.findAll(lang));
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
         }

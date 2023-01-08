@@ -8,7 +8,7 @@ import kg.megacom.NaTv.models.entity.Channel;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-01-06T22:12:01+0600",
+    date = "2023-01-08T01:00:04+0600",
     comments = "version: 1.5.2.Final, compiler: javac, environment: Java 11.0.16 (Oracle Corporation)"
 )
 public class ChannelMapperImpl implements ChannelMapper {

@@ -1,5 +1,6 @@
 package kg.megacom.NaTv.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,7 +28,9 @@ public class Prices {
     Date endDate;
     BigDecimal price;
 
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonBackReference
     @JoinColumn(name = "tb_channel_id", referencedColumnName = "id")
     Channel channelId;
 

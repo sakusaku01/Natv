@@ -1,6 +1,7 @@
 package kg.megacom.NaTv.controllers;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import kg.megacom.NaTv.models.dtos.PricesDto;
 import kg.megacom.NaTv.services.PricesServices;
 import kg.megacom.NaTv.swagger.Swagger2Config;
@@ -19,6 +20,7 @@ public class PricesController {
     private PricesServices services;
 
     @PostMapping("/save")
+    @ApiOperation(value = "Сохранение цен")
     public ResponseEntity<?> save(@RequestBody PricesDto dto, int lang) {
         try {
             return ResponseEntity.ok(services.save(dto,lang));
@@ -28,14 +30,16 @@ public class PricesController {
 
     }
     @GetMapping("/get")
+    @ApiOperation(value = "Поиск цен по id")
     public  ResponseEntity<?> findById(@RequestParam Long id,@RequestParam int lang) {
         return ResponseEntity.ok(services.findById(id,lang));
     }
 
     @GetMapping("/get/all")
-    public ResponseEntity<?> findAll() {
+    @ApiOperation(value = "Поиск всех цен")
+    public ResponseEntity<?> findAll(@RequestParam int lang) {
         try {
-            return ResponseEntity.ok(services.findAll());
+            return ResponseEntity.ok(services.findAll(lang));
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
         }

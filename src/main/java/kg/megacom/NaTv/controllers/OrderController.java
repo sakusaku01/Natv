@@ -2,6 +2,7 @@ package kg.megacom.NaTv.controllers;
 
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import kg.megacom.NaTv.models.Request.OrderRequest;
 import kg.megacom.NaTv.models.dtos.OrderDto;
 import kg.megacom.NaTv.services.OrderDetailServices;
@@ -26,6 +27,7 @@ public class OrderController {
     }
 
     @PostMapping("/save")
+    @ApiOperation(value = "Сохранение заказов")
     public ResponseEntity<?> save(@RequestBody OrderDto dto,int lang) {
         try {
             return ResponseEntity.ok(services.save(dto,lang));
@@ -35,6 +37,7 @@ public class OrderController {
 
     }
     @PostMapping("/make/order")
+    @ApiOperation(value = "Сделать заказ")
     public ResponseEntity<?> makeOrder(@RequestBody OrderRequest request,@RequestParam int lang) {
         try {
             return ResponseEntity.ok(od.makeOrder(request,lang));
@@ -44,15 +47,17 @@ public class OrderController {
 
     }
     @GetMapping("/get")
+    @ApiOperation(value = "Поиск заказов по id")
     public  ResponseEntity<?> findById(@RequestParam Long id,
                                        @RequestParam int lang) {
             return ResponseEntity.ok(services.findById(id,lang));
     }
 
     @GetMapping("/get/all")
-    public ResponseEntity<?> findAll() {
+    @ApiOperation(value = "Поиск всех заказов")
+    public ResponseEntity<?> findAll(@RequestParam int lang) {
         try {
-            return ResponseEntity.ok(services.findAll());
+            return ResponseEntity.ok(services.findAll(lang));
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
         }

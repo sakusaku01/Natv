@@ -17,7 +17,6 @@ public interface ChannelRepository extends JpaRepository<Channel,Long> {
     List<Response> channelResponse(int page, int size);
 
 
-////    @Query("select pc,max(c.price) from Prices c join c.channelId pc where c.price =(select max(c.price) from Prices ) ")
     @Query("select c from Channel c inner join c.prices p inner join c.discounts d WHERE d.minDays is Null")
     Channel fidn();
 

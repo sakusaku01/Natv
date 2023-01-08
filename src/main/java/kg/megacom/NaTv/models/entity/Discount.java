@@ -1,6 +1,8 @@
 package kg.megacom.NaTv.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +28,8 @@ public class Discount {
     @Temporal(TemporalType.DATE)
     Date endDate;
     int minDays;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonBackReference
     @JoinColumn(name = "tb_channel_id", referencedColumnName = "id")
     Channel channelId;
 }

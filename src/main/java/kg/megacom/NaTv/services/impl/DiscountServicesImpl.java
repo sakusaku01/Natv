@@ -1,5 +1,6 @@
 package kg.megacom.NaTv.services.impl;
 
+import kg.megacom.NaTv.exceptions.ValueNotFoundExc;
 import kg.megacom.NaTv.models.dtos.DiscountDto;
 import kg.megacom.NaTv.exceptions.EntityNotFoundExc;
 import kg.megacom.NaTv.mappers.DiscountMapper;
@@ -36,7 +37,11 @@ public class DiscountServicesImpl implements DiscountServices {
     }
 
     @Override
-    public List<DiscountDto> findAll() {
+    public List<DiscountDto> findAll(int lang) {
+        Language language = Language.getLang(lang);
+        if(DiscountMapper.INSTANCE.toDtos(rep.findAll()).isEmpty()){
+            throw new ValueNotFoundExc(ResourceBundle.periodMessages(language,"discountsNotCreated"));
+        }
         return DiscountMapper.INSTANCE.toDtos(rep.findAll());
     }
 

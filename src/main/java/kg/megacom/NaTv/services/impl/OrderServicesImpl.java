@@ -1,5 +1,6 @@
 package kg.megacom.NaTv.services.impl;
 
+import kg.megacom.NaTv.exceptions.ValueNotFoundExc;
 import kg.megacom.NaTv.models.dtos.OrderDto;
 import kg.megacom.NaTv.exceptions.EntityNotFoundExc;
 import kg.megacom.NaTv.mappers.OrderMapper;
@@ -29,7 +30,11 @@ public class OrderServicesImpl implements OrderServices {
     }
 
     @Override
-    public List<OrderDto> findAll() {
+    public List<OrderDto> findAll(int lang) {
+        Language language  = Language.getLang(lang);
+        if (OrderMapper.INSTANCE.toDtos(rep.findAll()).isEmpty()){
+            throw new ValueNotFoundExc(ResourceBundle.periodMessages(language,"ordersNotCreated"));
+        }
         return OrderMapper.INSTANCE.toDtos(rep.findAll());
     }
 }

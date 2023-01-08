@@ -4,6 +4,7 @@ import kg.megacom.NaTv.exceptions.ValueNotFoundExc;
 import kg.megacom.NaTv.models.dtos.ChannelDto;
 import kg.megacom.NaTv.exceptions.EntityNotFoundExc;
 import kg.megacom.NaTv.mappers.ChannelMapper;
+import kg.megacom.NaTv.models.entity.Channel;
 import kg.megacom.NaTv.models.response.ChannelResponse;
 import kg.megacom.NaTv.models.response.Response;
 
@@ -14,6 +15,7 @@ import kg.megacom.NaTv.repositories.ChannelRepository;
 import kg.megacom.NaTv.repositories.DiscountRepository;
 import kg.megacom.NaTv.services.ChannelServices;
 import kg.megacom.NaTv.microServices.FileServiceFeign;
+import org.hibernate.annotations.QueryHints;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,6 +44,7 @@ public class ChannelServicesImpl implements ChannelServices {
     @PersistenceContext()
     private EntityManager entityManager;
 
+
     @Override
     public List<?> findByAll(String name, BigDecimal price, Boolean isActive,
                              Boolean isDiscount, Boolean orderNum, MaxMin maxMin){
@@ -49,13 +52,13 @@ public class ChannelServicesImpl implements ChannelServices {
 
         StringBuilder sqlCode =
                 new StringBuilder("select c from Channel c" +
-                                  " inner join c.prices p inner join c.discounts d");
+                                  " left join fetch c.discounts d ");
 
         if(name != null){
 
             if (count != 0) {
                 sqlCode.append(" and");
-                sqlCode.append(" where c.name LIKE ");
+                sqlCode.append(" c.name LIKE ");
                 sqlCode.append("'" + name + "%'");
             }else {
                 sqlCode.append(" where c.name LIKE ");
@@ -68,7 +71,7 @@ public class ChannelServicesImpl implements ChannelServices {
         if(isActive !=null){
             if (count != 0) {
                 sqlCode.append(" and");
-                sqlCode.append(" where c.active = ");
+                sqlCode.append(" c.active = ");
                 sqlCode.append(isActive);
 
             }else {
@@ -82,7 +85,7 @@ public class ChannelServicesImpl implements ChannelServices {
         if(isDiscount !=null&& isDiscount){
             if (count != 0) {
                 sqlCode.append(" and");
-                sqlCode.append(" where d.minDays > 0");
+                sqlCode.append(" d.minDays > 0");
             }else {
                 sqlCode.append(" where d.minDays > 0");
             }
@@ -93,7 +96,7 @@ public class ChannelServicesImpl implements ChannelServices {
         if(isDiscount !=null && !isDiscount){
             if (count != 0) {
                 sqlCode.append(" and");
-                sqlCode.append(" where d is null");
+                sqlCode.append("  d is null");
             }else {
                 sqlCode.append(" where d is null");
             }
@@ -106,7 +109,7 @@ public class ChannelServicesImpl implements ChannelServices {
         if (price != null){
             if (count != 0) {
                 sqlCode.append(" and");
-                sqlCode.append(" where p.price = ");
+                sqlCode.append(" p.price = ");
                 sqlCode.append(price);
             }else {
                 sqlCode.append(" where p.price = ");
@@ -166,8 +169,8 @@ public class ChannelServicesImpl implements ChannelServices {
     }
 
     @Override
-    public List<ChannelDto> findAll() {
-        Language language = Language.getLang(1);
+    public List<ChannelDto> findAll(int lang) {
+        Language language = Language.getLang(lang);
          if(ChannelMapper.INSTANCE.toDtos(rep.findAll()).isEmpty()){
              throw new ValueNotFoundExc(ResourceBundle.periodMessages(language,"channelsNotCreated"));
          }

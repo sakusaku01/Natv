@@ -59,7 +59,11 @@ public class OrderDetailServicesImpl implements OrderDetailServices {
     }
 
     @Override
-    public List<OrderDetailDto> findAll() {
+    public List<OrderDetailDto> findAll(int lang) {
+        Language language = Language.getLang(lang);
+        if (OrderDetailMapper.INSTANCE.toDtos(rep.findAll()).isEmpty()){
+            throw new ValueNotFoundExc(ResourceBundle.periodMessages(language,"orderDetailsNotCreated"));
+        }
         return OrderDetailMapper.INSTANCE.toDtos(rep.findAll());
     }
     @Override

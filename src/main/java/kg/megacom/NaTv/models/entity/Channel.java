@@ -2,11 +2,14 @@ package kg.megacom.NaTv.models.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -48,11 +51,13 @@ public class Channel {
 
 
     @JsonIgnore
+    @JsonManagedReference
     @OneToMany(mappedBy = "channelId")
     List<Prices> prices;
 
 
     @JsonIgnore
+    @JsonManagedReference
     @OneToMany(mappedBy = "channelId")
     List<Discount> discounts;
 
